@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', launches=launches)
 
 
 def fetch_spacex_launches():
@@ -18,12 +18,19 @@ def fetch_spacex_launches():
     else:
         return[]
 
-# def catergorize_launches(launches):
-#         successful = filter(launches
+def catergorize_launches(launches):
+        successful = list(filter( lambda x: x['success'] and not x['upcoming'], launches))
+        failed = list(filter( lambda x: not x['success'] and not x['upcoming'], launches))
+        upcoming = list(filter( lambda x: x['upcoming'], launches))
+
+        return {
+            'successful': successful,
+            'failed': failed,
+            'upcoming': upcoming
+        }
 
 
-launches = fetch_spacex_launches()
-
+launches = catergorize_launches(fetch_spacex_launches())
 
 
 if __name__ == '__main__':
